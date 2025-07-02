@@ -4,6 +4,7 @@
 #include <U8g2lib.h>
 
 #define GREEN_LED_PIN 7
+#define RED_LED_PIN 8
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(U8G2_R0);
 MAX30105 particleSensor;
@@ -17,8 +18,11 @@ int beatAvg;
 
 void setup() {
   Serial.begin(9600);
+
   pinMode(GREEN_LED_PIN, OUTPUT);
+  pinMode(RED_LED_PIN, OUTPUT);
   digitalWrite(GREEN_LED_PIN, LOW);
+  digitalWrite(RED_LED_PIN, LOW);
 
   display.begin();
   display.clearBuffer();
@@ -61,13 +65,16 @@ void loop() {
   display.print("BPM: ");
   display.print(beatAvg);
 
+  // Check BPM and LED(s)
   if (beatAvg < 50 || beatAvg > 120) {
     display.setFont(u8g2_font_6x10_tf);
     display.setCursor(0, 60);
     display.print("Arrhythmia detected!");
-    digitalWrite(GREEN_LED_PIN, LOW);  // ดับ = ผิดปกติ 
+    digitalWrite(GREEN_LED_PIN, LOW); // Close Green
+    digitalWrite(RED_LED_PIN, HIGH); // Open Red
   } else {
-    digitalWrite(GREEN_LED_PIN, HIGH); // ติด = ปกติ
+    digitalWrite(GREEN_LED_PIN, HIGH); // Open Green
+    digitalWrite(RED_LED_PIN, LOW); // Close Red
   }
 
   display.sendBuffer();
